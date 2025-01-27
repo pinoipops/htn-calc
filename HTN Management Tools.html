@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTN Management Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lexend', Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 420px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+            text-align: left;
+            color: #444;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+
+        .checkbox-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group label {
+            font-weight: normal;
+            display: block;
+            margin: 8px 0;
+            color: #555;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007BFF;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1rem;
+            color: #333;
+            text-align: left;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .tips {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .lifestyle-advice, .dual-therapy-advice {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #333;
+            text-align: left;
+            display: none; /* Hidden by default */
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .save-button {
+            background-color: #28a745;
+            margin-top: 20px;
+        }
+
+        .save-button:hover {
+            background-color: #218838;
+        }
+
+        .toggle-button {
+            background-color: #6c757d;
+            margin-top: 10px;
+        }
+
+        .toggle-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HTN Management Tools</h1>
+        <div class="subtitle">by Esphynol JAMALUDDIN</div>
+        <form id="htnForm">
+            <label for="age">Age:</label>
+            <input type="number" id="age" placeholder="Enter age" required>
+
+            <label for="ethnicity">Ethnicity:</label>
+            <select id="ethnicity" required>
+                <option value="">Select ethnicity</option>
+                <option value="Malay">Malay</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Indian">Indian</option>
+                <option value="Indigenous">Indigenous</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label>Comorbidities:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="comorbidities" value="Diabetes"> Diabetes</label>
+                <label><input type="checkbox" name="comorbidities" value="CKD"> Chronic Kidney Disease (CKD)</label>
+                <label><input type="checkbox" name="comorbidities" value="IHD"> Ischaemic Heart Disease (IHD)</label>
+                <label><input type="checkbox" name="comorbidities" value="Heart Failure"> Heart Failure</label>
+                <label><input type="checkbox" name="comorbidities" value="Stroke"> Stroke</label>
+                <label><input type="checkbox" name="comorbidities" value="Dyslipidemia"> Dyslipidemia</label>
+                <label><input type="checkbox" name="comorbidities" value="Obesity"> Obesity</label>
+            </div>
+
+            <button type="button" id="calculateBtn">Get Recommendation</button>
+        </form>
+        <div id="result"></div>
+        <button class="toggle-button" id="toggleLifestyleBtn" style="display: none;">Show Lifestyle Modifications</button>
+        <div class="lifestyle-advice" id="lifestyleAdvice"></div>
+        <button class="toggle-button" id="toggleDualTherapyBtn" style="display: none;">Show Dual Therapy Suggestions</button>
+        <div class="dual-therapy-advice" id="dualTherapyAdvice"></div>
+        <button class="save-button" id="saveBtn" style="display: none;">Save/Print Recommendation</button>
+        <div class="tips">* Recommendations are based on Malaysia CPG for Hypertension Management (2018).</div>
+    </div>
+
+    <script>
+        document.getElementById("calculateBtn").addEventListener("click", function () {
+            const age = parseInt(document.getElementById("age").value.trim(), 10);
+            const ethnicity = document.getElementById("ethnicity").value;
+            const comorbidities = Array.from(document.querySelectorAll('input[name="comorbidities"]:checked')).map(checkbox => checkbox.value);
+
+            const resultDiv = document.getElementById("result");
+            const lifestyleAdviceDiv = document.getElementById("lifestyleAdvice");
+            const dualTherapyAdviceDiv = document.getElementById("dualTherapyAdvice");
+            const toggleLifestyleBtn = document.getElementById("toggleLifestyleBtn");
+            const toggleDualTherapyBtn = document.getElementById("toggleDualTherapyBtn");
+            const saveBtn = document.getElementById("saveBtn");
+
+            // Validate inputs
+            if (isNaN(age) || !ethnicity || comorbidities.length === 0) {
+                resultDiv.innerHTML = "Please fill in all fields.";
+                lifestyleAdviceDiv.innerHTML = "";
+                dualTherapyAdviceDiv.innerHTML = "";
+                toggleLifestyleBtn.style.display = "none";
+                toggleDualTherapyBtn.style.display = "none";
+                saveBtn.style.display = "none";
+                return;
+            }
+
+            // Determine first-line drug based on Malaysia CPG
+            let recommendation = "";
+            let dosage = "";
+            let timeframe = ""; // New variable for timeframe to escalate therapy
+            let lifestyleAdvice = "";
+            let dualTherapyAdvice = ""; // New variable for dual therapy suggestions
+
+            // Priority for comorbidities
+            if (comorbidities.includes("Heart Failure")) {
+                recommendation = "First-line: ACEI/ARB + Beta-blocker + Diuretic.";
+                dosage = "Perindopril 4 mg + Bisoprolol 5 mg + Furosemide 40 mg once daily.";
+                timeframe = "Reassess BP after 2–4 weeks. If target BP is not achieved, consider adjusting doses or adding another agent.";
+                dualTherapyAdvice = "For dual therapy, consider adding a CCB (e.g., Amlodipine 5 mg once daily).";
+            } else if (comorbidities.includes("IHD")) {
+                recommendation = "First-line: Beta-blocker or CCB.";
+                dosage = "Bisoprolol 5 mg once daily or Amlodipine 5 mg once daily.";
+                timeframe = "Reassess BP after 4–6 weeks. If target BP is not achieved, consider dual therapy (add ACEI/ARB).";
+                dualTherapyAdvice = "For dual therapy, consider adding an ACEI (e.g., Perindopril 4 mg once daily) or ARB (e.g., Losartan 50 mg once daily).";
+            } else if (comorbidities.includes("Diabetes") || comorbidities.includes("CKD")) {
+                recommendation = "First-line: ACEI or ARB.";
+                dosage = "Perindopril 4 mg once daily or Losartan 50 mg once daily.";
+                timeframe = "Reassess BP after 2–4 weeks. If target BP is not achieved, consider dual therapy (add CCB).";
+                dualTherapyAdvice = "For dual therapy, consider adding a CCB (e.g., Amlodipine 5 mg once daily).";
+            } else if (comorbidities.includes("Stroke")) {
+                recommendation = "First-line: ACEI + Thiazide Diuretic.";
+                dosage = "Perindopril 4 mg + Indapamide 1.5 mg once daily.";
+                timeframe = "Reassess BP after 4–6 weeks. If target BP is not achieved, consider adding a CCB.";
+                dualTherapyAdvice = "For dual therapy, consider adding a CCB (e.g., Amlodipine 5 mg once daily).";
+            } else if (comorbidities.includes("Dyslipidemia") || comorbidities.includes("Obesity")) {
+                recommendation = "First-line: ACEI or ARB.";
+                dosage = "Perindopril 4 mg once daily or Losartan 50 mg once daily.";
+                timeframe = "Reassess BP after 4–6 weeks. If target BP is not achieved, consider dual therapy (add CCB).";
+                dualTherapyAdvice = "For dual therapy, consider adding a CCB (e.g., Amlodipine 5 mg once daily).";
+            } else {
+                if (age < 55) {
+                    recommendation = "First-line: ACEI or ARB.";
+                    dosage = "Perindopril 4 mg once daily or Losartan 50 mg once daily.";
+                    timeframe = "Reassess BP after 4–6 weeks. If target BP is not achieved, consider dual therapy (add CCB).";
+                    dualTherapyAdvice = "For dual therapy, consider adding a CCB (e.g., Amlodipine 5 mg once daily).";
+                } else if (age >= 55 || ethnicity === "Malay" || ethnicity === "Indigenous") {
+                    recommendation = "First-line: CCB.";
+                    dosage = "Amlodipine 5 mg once daily.";
+                    timeframe = "Reassess BP after 4–6 weeks. If target BP is not achieved, consider dual therapy (add ACEI/ARB).";
+                    dualTherapyAdvice = "For dual therapy, consider adding an ACEI (e.g., Perindopril 4 mg once daily) or ARB (e.g., Losartan 50 mg once daily).";
+                } else {
+                    recommendation = "First-line: ACEI or ARB.";
+                    dosage = "Perindopril 4 mg once daily or Losartan 50 mg once daily.";
+                    timeframe = "Reassess BP after 4–6 weeks. If target BP is not achieved, consider dual therapy (add CCB).";
+                    dualTherapyAdvice = "For dual therapy, consider adding a CCB (e.g., Amlodipine 5 mg once daily).";
+                }
+            }
+
+            // Lifestyle Advice
+            lifestyleAdvice = `
+                <strong>Lifestyle Modifications:</strong>
+                <ul>
+                    <li>Reduce salt intake (<5 g/day).</li>
+                    <li>Increase potassium-rich foods (e.g., fruits, vegetables).</li>
+                    <li>Aim for a healthy BMI (18.5–24.9 kg/m²).</li>
+                    <li>Engage in moderate exercise for at least 150 minutes/week.</li>
+                    <li>Limit alcohol intake and quit smoking.</li>
+                </ul>
+            `;
+
+            // Display Results
+            resultDiv.innerHTML = `
+                <div style="margin-bottom: 10px;">
+                    <strong>Recommended Treatment:</strong><br>
+                    ${recommendation}
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Dosage:</strong><br>
+                    ${dosage}
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <strong>Timeframe to Escalate:</strong><br>
+                    ${timeframe}
+                </div>
+            `;
+            lifestyleAdviceDiv.innerHTML = lifestyleAdvice;
+            dualTherapyAdviceDiv.innerHTML = `
+                <strong>Dual Therapy Suggestions:</strong><br>
+                ${dualTherapyAdvice}
+            `;
+            toggleLifestyleBtn.style.display = "block";
+            toggleDualTherapyBtn.style.display = "block";
+            saveBtn.style.display = "block";
+        });
+
+        // Toggle Lifestyle Advice
+        document.getElementById("toggleLifestyleBtn").addEventListener("click", function () {
+            const lifestyleAdviceDiv = document.getElementById("lifestyleAdvice");
+            const toggleLifestyleBtn = document.getElementById("toggleLifestyleBtn");
+
+            if (lifestyleAdviceDiv.style.display === "none") {
+                lifestyleAdviceDiv.style.display = "block";
+                toggleLifestyleBtn.textContent = "Hide Lifestyle Modifications";
+            } else {
+                lifestyleAdviceDiv.style.display = "none";
+                toggleLifestyleBtn.textContent = "Show Lifestyle Modifications";
+            }
+        });
+
+        // Toggle Dual Therapy Advice
+        document.getElementById("toggleDualTherapyBtn").addEventListener("click", function () {
+            const dualTherapyAdviceDiv = document.getElementById("dualTherapyAdvice");
+            const toggleDualTherapyBtn = document.getElementById("toggleDualTherapyBtn");
+
+            if (dualTherapyAdviceDiv.style.display === "none") {
+                dualTherapyAdviceDiv.style.display = "block";
+                toggleDualTherapyBtn.textContent = "Hide Dual Therapy Suggestions";
+            } else {
+                dualTherapyAdviceDiv.style.display = "none";
+                toggleDualTherapyBtn.textContent = "Show Dual Therapy Suggestions";
+            }
+        });
+
+        // Save/Print Functionality
+        document.getElementById("saveBtn").addEventListener("click", function () {
+            const resultDiv = document.getElementById("result").innerText;
+            const lifestyleAdviceDiv = document.getElementById("lifestyleAdvice").innerText;
+            const dualTherapyAdviceDiv = document.getElementById("dualTherapyAdvice").innerText;
+
+            const content = `
+                Hypertension Management Recommendation\n\n
+                ${resultDiv}\n\n
+                ${lifestyleAdviceDiv}\n\n
+                ${dualTherapyAdviceDiv}
+            `;
+
+            // Print or Save as PDF
+            const printWindow = window.open("", "", "height=600,width=800");
+            printWindow.document.write(`<pre>${content}</pre>`);
+            printWindow.document.close();
+            printWindow.print();
+        });
+    </script>
+</body>
+</html>
