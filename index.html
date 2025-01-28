@@ -14,7 +14,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         .container {
@@ -22,8 +22,12 @@
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 420px;
+            width: 90%;
+            max-width: 420px;
             text-align: center;
+            margin: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         h1 {
@@ -54,6 +58,7 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             background-color: #f9f9f9;
+            box-sizing: border-box;
         }
 
         .checkbox-group {
@@ -79,6 +84,7 @@
             cursor: pointer;
             margin-top: 15px;
             transition: background-color 0.3s ease;
+            box-sizing: border-box;
         }
 
         button:hover {
@@ -131,6 +137,32 @@
 
         .toggle-button:hover {
             background-color: #5a6268;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .subtitle {
+                font-size: 0.8rem;
+            }
+
+            label, input[type="number"], select, button, .checkbox-group label, #result, .tips, .lifestyle-advice, .dual-therapy-advice {
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            input[type="number"], select {
+                padding: 8px;
+            }
+
+            button {
+                padding: 10px;
+            }
         }
     </style>
 </head>
