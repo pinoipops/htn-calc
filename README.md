@@ -3,6 +3,8 @@
 ## Overview
 The **HTN Management Tools** is a web-based application designed to assist healthcare professionals in managing hypertension (HTN) by providing personalized treatment recommendations based on patient demographics and comorbidities. The tool adheres to the **Malaysia Clinical Practice Guidelines (CPG) for Hypertension Management (2018)**.
 
+![Screenshot](screenshot.png) <!-- Add a screenshot later -->
+
 ## Features
 - **Personalized Recommendations**: Provides first-line drug recommendations, dosages, and timeframes for therapy escalation based on patient age, ethnicity, and comorbidities.
 - **Lifestyle Modifications**: Offers evidence-based lifestyle advice to complement pharmacological treatment.
